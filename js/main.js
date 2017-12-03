@@ -225,8 +225,12 @@ game.States.main = {
             myplane.level--;
         } else {
             myplane.kill();
-            //this.dead();
+            this.dead();
         }
+    },
+
+    dead: function() {
+        game.state.start('main');
     },
 
     update: function() {
