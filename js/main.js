@@ -67,7 +67,7 @@ function Enemy(config) {
         }, this);
     };
 
-    this.hitEnemy = function(myBullet, enemy) {
+    this.beHit = function(myBullet, enemy) {
         
         myBullet.kill();
         enemy.life--;
@@ -78,7 +78,7 @@ function Enemy(config) {
               explosion.reset(enemy.body.x, enemy.body.y);
               explosion.play(config.explodePic, 30, false, true);
               score += config.score;
-              config.game.updateText();
+              //config.game.updateText();
         }
     };
 }
@@ -99,7 +99,7 @@ game.States.boot = {
 
         //
         game.load.image('loadingbar', 'assets/preloader.gif');
-        game.load.image('bg', 'assets/bg4.png');
+        game.load.image('bg', 'assets/bg5.png');
 
     },
     create: function() {
@@ -123,7 +123,7 @@ game.States.load = {
         game.load.spritesheet('enemy', 'assets/enemy.png', 60, 60, 2);
         game.load.spritesheet('jz', 'assets/jz.png', 13, 34, 2);
         game.load.spritesheet('ep', 'assets/enemy_explode.png', 40, 40, 3);
-        game.load.spritesheet('pigu', 'assets/my_plane.png', 85, 62, 2);
+        game.load.spritesheet('pigu', 'assets/my_plane.png', 89, 75, 2);
         game.load.image('bullet', 'assets/bullet.png');
 
     },
@@ -187,8 +187,8 @@ game.States.main = {
             explodePool: 10,
             life: 2,
             velocity: 60,
-            bulletX: 9,
-            bulletY: 20,
+            bulletX: 24,
+            bulletY: 40,
             bulletVelocity: 200,
             selfTimeInterval: 2,
             bulletTimeInterval: 1000,
@@ -210,7 +210,7 @@ game.States.main = {
             var bullet;
             bullet = this.myBullets.getFirstExists(false);
             if(bullet) {
-                bullet.reset(this.playerPlane.x + 22, this.playerPlane.y - 15);
+                bullet.reset(this.playerPlane.x + 27, this.playerPlane.y - 15);
                 bullet.body.velocity.y = -500;
                 this.bulletTime = game.time.now + 150;
             }
@@ -219,13 +219,24 @@ game.States.main = {
 
     },
 
+    HitPlayerPlane: function(myplane, bullet) {
+        bullet.kill();
+        if(myplane.level > 1) {
+            myplane.level--;
+        } else {
+            myplane.kill();
+            //this.dead();
+        }
+    },
+
     update: function() {
 
         // Fire
         if (this.myStartFire && game.time.now) {
             this.myFireBullet();
             this.enemy1.enemyFire();
-            game.physics.arcade.overlap(this.mybullets, this.enemy1.enemies, this.enemy1.hitEnemy, null, this.enemy1);
+            game.physics.arcade.overlap(this.myBullets, this.enemy1.enemies, this.enemy1.beHit, null, this.enemy1);
+            game.physics.arcade.overlap(this.enemy1.enemyBullets, this.playerPlane, this.HitPlayerPlane, null, this);
         }
         
     }
